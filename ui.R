@@ -17,6 +17,7 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins
   tabsetPanel(
   tabPanel(
+    ## TODO: Add header, sep and file format input
     "Dataset", list(fileInput("datafile", "Data"), dataTableOutput("dataframe"))
     ),
   tabPanel(
