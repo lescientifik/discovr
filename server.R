@@ -1,11 +1,4 @@
-#
-# This is the server logic of a Shiny web application. You can run the 
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-# 
-#    http://shiny.rstudio.com/
-#
+
 
 library(shiny)
 library(ggplot2)
@@ -16,19 +9,22 @@ library(broom)
 
 
 
-# Define server logic required to draw a histogram
+# Define server logic 
+
 shinyServer(function(input, output, session) {
   
   df <- data.frame()
    
-  output$distPlot <- renderPlot({
+  output$Plot <- renderPlot({
     
     if (is.null(input$variable))
       return(NULL)
     
     ifelse(is.numeric(df[,as.character(input$variable)]),
            return(ggplot(aes_string(x = input$variable), data = df) +
-                    geom_histogram(bins = input$bins) + theme_minimal()),
+                    geom_histogram(bins = input$bins) + theme_minimal() +
+                    scale_x_continuous(limits = c(input$xmin, input$xmax))
+                    ),
            return(ggplot(aes_string(x = input$variable), data = df) +
                     geom_bar() + theme_minimal()))
     
@@ -39,14 +35,19 @@ shinyServer(function(input, output, session) {
     if (is.null(input$variable))
       return(NULL)
     
-    if (is.numeric(df[,as.character(input$variable)]))
-      sliderInput(
+    if (is.numeric(df[,as.character(input$variable)])){
+      fluidRow(
+        column(3,
+               sliderInput(
         "bins",
         "Number of bins:",
         min = 1,
         max = 50,
         value = 30
-      )
+      )),
+      column(4, offset = 1, numericInput("xmin", label = "X min", value = NULL)),
+      column(4, numericInput("xmax", label = "X max", value = NULL)))
+    }
         })
                                               
   output$dataframe <- renderDataTable({

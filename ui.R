@@ -24,7 +24,7 @@ shinyUI(fluidPage(
     list(
       selectizeInput("variable", "Choose one variable", choices = c("Choose one" = "")),
       uiOutput("condPanel"),
-      plotOutput("distPlot"),
+      plotOutput("Plot"),
       dataTableOutput("stat_summary")
     )
   ))
