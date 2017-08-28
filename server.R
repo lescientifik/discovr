@@ -9,6 +9,9 @@
 
 library(shiny)
 library(ggplot2)
+library(dplyr)
+library(broom)
+
 
 
 
@@ -25,8 +28,10 @@ shinyServer(function(input, output, session) {
       return(NULL)
     
     ifelse(is.numeric(df[,as.character(input$variable)]),
-           return(ggplot(aes_string(x = input$variable), data = df) + geom_histogram(bins = input$bins) + theme_minimal()),
-           return(ggplot(aes_string(x = input$variable), data = df) + geom_bar() + theme_minimal()))
+           return(ggplot(aes_string(x = input$variable), data = df) +
+                    geom_histogram(bins = input$bins) + theme_minimal()),
+           return(ggplot(aes_string(x = input$variable), data = df) +
+                    geom_bar() + theme_minimal()))
     
     
   })
@@ -43,4 +48,8 @@ shinyServer(function(input, output, session) {
     df
     
   }, options = list(scrollX = T, pageLength = 5))
+  
+  output$stat_summary <- renderDataTable({
+    summary(df[,as.character(input$variable)]) %>% tidy
+  }, options = list(dom = 't', searching = F))
 })
