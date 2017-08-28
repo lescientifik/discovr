@@ -22,9 +22,8 @@ shinyServer(function(input, output, session) {
   df <- data.frame()
    
   output$distPlot <- renderPlot({
-    inFile <- input$datafile
     
-    if (is.null(inFile))
+    if (is.null(input$variable))
       return(NULL)
     
     ifelse(is.numeric(df[,as.character(input$variable)]),
@@ -36,6 +35,20 @@ shinyServer(function(input, output, session) {
     
   })
   
+  output$condPanel <- renderUI({
+    if (is.null(input$variable))
+      return(NULL)
+    
+    if (is.numeric(df[,as.character(input$variable)]))
+      sliderInput(
+        "bins",
+        "Number of bins:",
+        min = 1,
+        max = 50,
+        value = 30
+      )
+        })
+                                              
   output$dataframe <- renderDataTable({
     inFile <- input$datafile
     
@@ -44,7 +57,7 @@ shinyServer(function(input, output, session) {
     
     df <<- read.csv(inFile$datapath)
     updateSelectizeInput(session, "variable",
-                         choices = c("Write here" = "", names(df)))
+                         choices = c("Write here" = "", names(df)), selected = names(df)[1])
     df
     
   }, options = list(scrollX = T, pageLength = 5))
