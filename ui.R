@@ -18,6 +18,8 @@ shinyUI(fluidPage(
   # Sidebar with a slider input for number of bins 
   sidebarLayout(
     sidebarPanel(
+       fileInput("datafile", "Data"),
+       selectizeInput("variable","Choose one variable", choices = c("Choose one" = "")),
        sliderInput("bins",
                    "Number of bins:",
                    min = 1,
@@ -27,7 +29,9 @@ shinyUI(fluidPage(
     
     # Show a plot of the generated distribution
     mainPanel(
-       plotOutput("distPlot")
+       textOutput("result"),
+       plotOutput("distPlot"),
+       dataTableOutput("dataframe")
     )
   )
 ))

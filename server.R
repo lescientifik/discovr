@@ -8,19 +8,39 @@
 #
 
 library(shiny)
+library(ggplot2)
+
+
+
 
 # Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
+  
+  df <- data.frame()
    
   output$distPlot <- renderPlot({
+    inFile <- input$datafile
     
-    # generate bins based on input$bins from ui.R
-    x    <- faithful[, 2] 
-    bins <- seq(min(x), max(x), length.out = input$bins + 1)
+    if (is.null(inFile))
+      return(NULL)
     
-    # draw the histogram with the specified number of bins
-    hist(x, breaks = bins, col = 'darkgray', border = 'white')
+    ifelse(is.numeric(df[,as.character(input$variable)]),
+           return(ggplot(aes_string(x = input$variable), data = df) + geom_histogram(bins = input$bins) + theme_minimal()),
+           return(ggplot(aes_string(x = input$variable), data = df) + geom_bar() + theme_minimal()))
+    
     
   })
   
+  output$dataframe <- renderDataTable({
+    inFile <- input$datafile
+    
+    if (is.null(inFile))
+      return(NULL)
+    
+    df <<- read.csv(inFile$datapath)
+    updateSelectizeInput(session, "variable",
+                         choices = c("Write here" = "", names(df)))
+    df
+    
+  }, options = list(scrollX = T, pageLength = 5))
 })
